@@ -23,7 +23,7 @@
 
 #include "Arduino.h"
 
-#define ESP8266_USE_SOFTWARE_SERIAL
+//#define ESP8266_USE_SOFTWARE_SERIAL
 
 #ifdef ESP8266_USE_SOFTWARE_SERIAL
 #include "SoftwareSerial.h"
@@ -274,7 +274,7 @@ class ESP8266 {
      /**
      * Set the  state of DHCP. 
      * @param pattern -1 send "AT+CWDHCP_DEF=" -2 send "AT+CWDHCP_CUR=" -3 send "AT+CWDHCP=". 
-     * @param mode - set ap or set station or set ap + station. 
+     * @param mode - 0 : set ESP8266 softAP, 1 : set ESP8266 station, 2 : set both softAP and station
      * @param en - 0 disable DHCP  - 1 enable DHCP. 
      * @retval true - success.
      * @retval false - failure.
