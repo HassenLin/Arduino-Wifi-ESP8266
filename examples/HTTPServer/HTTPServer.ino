@@ -14,7 +14,7 @@
 
 
 SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin);
-ESP8266 wifi(mySerial,9600);
+ESP8266 wifi(mySerial);
 dht11 DHT11;
 #ifdef CDC_Debug
   #define std_print(x)  Serial.print(x)
@@ -40,9 +40,7 @@ void setup() {
   
   std_print("setup begin\r\n");
   
-  mySerial.write("AT+CIOBAUD=57600\r\n");
-  mySerial.end();
-  mySerial.begin(57600);
+	wifi.begin();
   
   std_println("FW Version:");
   std_println(wifi.getVersion().c_str());

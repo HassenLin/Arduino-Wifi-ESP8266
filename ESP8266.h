@@ -38,7 +38,7 @@
  * You can modify the macro to choose a different version
  */
 
-#define  USER_SEL_VERSION         VERSION_18
+#define  USER_SEL_VERSION         VERSION_22
 
 /**
  * Provide an easy-to-use way to manipulate ESP8266.
@@ -55,11 +55,7 @@ class ESP8266 {
      *
      * @warning parameter baud depends on the AT firmware. 9600 is an common value.
      */
-#if (USER_SEL_VERSION == VERSION_22)
-    ESP8266(SoftwareSerial &uart, uint32_t baud = 115200);
-#elif (USER_SEL_VERSION == VERSION_18)
-    ESP8266(SoftwareSerial &uart, uint32_t baud = 9600);
-#endif  /* #if(USER_SEL_VERSION==VERSION_22) */
+    ESP8266(SoftwareSerial &uart);
 
 #else /* HardwareSerial */
     /*
@@ -70,16 +66,18 @@ class ESP8266 {
      *
      * @warning parameter baud depends on the AT firmware. 9600 is an common value.
      */
-#if (USER_SEL_VERSION == VERSION_22)
-    ESP8266(HardwareSerial &uart, uint32_t baud = 115200);
-#elif (USER_SEL_VERSION == VERSION_18)
-    ESP8266(HardwareSerial &uart, uint32_t baud = 9600);
-#endif /* #if(USER_SEL_VERSION == VERSION_22) */
+
+    ESP8266(HardwareSerial &uart);
+
 
 
 #endif /* #ifdef ESP8266_USE_SOFTWARE_SERIAL */
 
-
+#if (USER_SEL_VERSION == VERSION_22)
+    void begin(uint32_t baud = 115200);
+#elif (USER_SEL_VERSION == VERSION_18)
+    void begin(uint32_t baud = 9600);
+#endif  /* #if(USER_SEL_VERSION==VERSION_22) */
     /**
      * Verify ESP8266 whether live or not.
      *
@@ -845,7 +843,14 @@ class ESP8266_Client : public Client, public WiFi_Print
     {
     	return m_bConnected;
     }
-
+		size_t write(uint8_t c)
+		{
+			return WiFi_Print::write(c);
+		}
+		size_t write(const uint8_t* data, size_t size)
+		{
+			return WiFi_Print::write(data,size);
+		}
 };
 
 #endif /* #ifndef __ESP8266_H__ */

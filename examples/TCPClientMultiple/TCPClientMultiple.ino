@@ -35,7 +35,7 @@ void setup(void)
     Serial.print("FW Version: ");
     Serial.println(wifi.getVersion().c_str());
     
-    
+    wifi.begin();
     if (wifi.setOprToStationSoftAP()) {
         Serial.print("to station + softap ok\r\n");
     } else {

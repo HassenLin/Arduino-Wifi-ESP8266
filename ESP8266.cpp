@@ -43,19 +43,21 @@
     } while(0)
 
 #ifdef ESP8266_USE_SOFTWARE_SERIAL
-ESP8266::ESP8266(SoftwareSerial &uart, uint32_t baud): m_puart(&uart)
+ESP8266::ESP8266(SoftwareSerial &uart): m_puart(&uart)
 {
-    m_puart->begin(baud);
-    rx_empty();
 }
 #else
-ESP8266::ESP8266(HardwareSerial &uart, uint32_t baud): m_puart(&uart)
+ESP8266::ESP8266(HardwareSerial &uart): m_puart(&uart)
 {
-    m_puart->begin(baud);
-    rx_empty();
+
 }
 #endif
-
+void ESP8266::begin(uint32_t baud)
+{
+    m_puart->begin(baud);
+    delay(100);
+    rx_empty();    
+}
 bool ESP8266::kick(void)
 {
     return eAT();
@@ -1263,9 +1265,32 @@ bool ESP8266::eATCIPCLOSESingle(void)
 }
 bool ESP8266::eATCIFSR(String &list)
 {
+	  bool success=false;
     rx_empty();
     m_puart->println(F("AT+CIFSR"));
-    return recvFindAndFilter("OK", "\r\r\n", "\r\n\r\nOK", list);
+    success=recvFindAndFilter("OK", "\r\r\n", "\r\n\r\nOK", list);
+    if(success)
+    {
+    	String iplist;
+    	int32_t index1, index2;
+    	index1 = list.indexOf("+CIFSR:APIP,\"");
+    	if(index1 != -1)
+    	{
+    	  index2 = list.indexOf("\"",index1+sizeof("+CIFSR:APIP,\""));
+    	  iplist+=list.substring(index1+sizeof("+CIFSR:APIP,\"")-1, index2);
+    	}
+    	index1 = list.indexOf("+CIFSR:STAIP,\"");
+    	if(index1 != -1)
+    	{
+    	  index2 = list.indexOf("\"",index1+sizeof("+CIFSR:STAIP,\""));
+    	  if(iplist.length()>0)
+    	  	iplist+="\r\n";
+    	  iplist += list.substring(index1+sizeof("+CIFSR:STAIP,\"")-1, index2);
+    	}
+    	if(iplist.length())
+    	   list=iplist;
+    }
+    return success;
 }
 bool ESP8266::sATCIPMUX(uint8_t mode)
 {

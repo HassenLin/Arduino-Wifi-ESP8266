@@ -1,5 +1,7 @@
 @mainpage
 
+Mofify for 0.9.5  AT Firmware.
+
 # WeeESP8266
 
 An ESP8266 library for Arduino providing an easy-to-use way to manipulate ESP8266.
@@ -26,6 +28,8 @@ will be useful for Arduino lovers.
 
 # API List
 
+		void  begin (baud) : Start Wifi Class
+		
     bool 	kick (void) : Verify ESP8266 whether live or not.
      
     bool 	restart (void) : Restart ESP8266 by "AT+RST".

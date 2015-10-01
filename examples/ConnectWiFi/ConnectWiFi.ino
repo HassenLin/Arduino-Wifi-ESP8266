@@ -32,7 +32,7 @@ void setup(void)
 
     Serial.print("FW Version: ");
     Serial.println(wifi.getVersion().c_str());
-    
+    wifi.begin();
     
     if (wifi.setOprToStation()) {
         Serial.print("to station ok\r\n");
