@@ -1,6 +1,7 @@
 @mainpage
 
 Mofify for 0.9.5  AT Firmware.
+Add NTP Support.
 
 # WeeESP8266
 
@@ -102,7 +103,8 @@ will be useful for Arduino lovers.
      
     uint32_t 	recv (uint8_t *coming_mux_id, uint8_t *buffer, uint32_t buffer_size, uint32_t timeout=1000) : Receive data from all of TCP or UDP builded already in multiple mode. 
 
-
+ 		unsigned long ntpTime(uint8_t mux_id=4);
+ 		
 # Mainboard Requires
 
   - RAM: not less than 2KBytes

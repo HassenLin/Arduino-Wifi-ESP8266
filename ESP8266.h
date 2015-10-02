@@ -625,6 +625,8 @@ class ESP8266 {
      */
     uint32_t recv(uint8_t *coming_mux_id, uint8_t *buffer, uint32_t buffer_size, uint32_t timeout = 1000);
 
+    unsigned long ntpTime(uint8_t mux_id=4);
+
   private:
 
     /*

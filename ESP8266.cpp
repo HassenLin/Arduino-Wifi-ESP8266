@@ -437,6 +437,43 @@ uint32_t ESP8266::recv(uint8_t *coming_mux_id, uint8_t *buffer, uint32_t buffer_
     return recvPkg(buffer, buffer_size, NULL, timeout, coming_mux_id);
 }
 
+unsigned long ESP8266::ntpTime(uint8_t mux_id)
+{
+  unsigned long gtime = 0;
+  byte buffer[48];
+  registerUDP(mux_id, "pool.ntp.org", 123);
+
+  // Only the first four bytes of an outgoing NTP packet need to be set
+  // appropriately, the rest can be whatever.
+  const long ntpFirstFourBytes = 0xEC0600E3; // NTP request header
+  send(mux_id,  (byte *)&ntpFirstFourBytes, 48);
+  // Wait for response; check every pollIntv ms up to maxPoll times
+  const int pollIntv = 150;   // poll every this many ms
+  const byte maxPoll = 15;    // poll up to this many times
+
+  for (byte i = 0; i < maxPoll; i++) {
+    if (recv(mux_id, buffer, 48, pollIntv) >= 45)
+    {
+
+      for (byte i = 40; i < 44; i++)
+        gtime = gtime << 8 | buffer[i];
+
+      // Round to the nearest second if we want accuracy
+      // The fractionary part is the next byte divided by 256: if it is
+      // greater than 500ms we round to the next second; we also account
+      // for an assumed network delay of 50ms, and (0.5-0.05)*256=115;
+      // additionally, we account for how much we delayed reading the packet
+      // since its arrival, which we assume on average to be pollIntv/2.
+      gtime += (buffer[44] > (115 - pollIntv / 8));
+      gtime -= 2208988800ul ;   // convert NTP time to Unix time
+      gtime += 8 * 60 * 60; //Taipei Time +8:00
+      break;
+    }
+  }
+
+  unregisterUDP(mux_id);
+  return gtime;
+}
 /*----------------------------------------------------------------------------*/
 /* +IPD,<id>,<len>:<data> */
 /* +IPD,<len>:<data> */
